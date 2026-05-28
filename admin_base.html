@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>لوحة الأدمن</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="{{ url_for('admin.dashboard') }}">لوحة الأدمن</a>
+    <a href="{{ url_for('admin.users') }}">المستخدمون</a>
+    <a href="{{ url_for('admin.qa') }}">الأسئلة</a>
+    <a href="{{ url_for('admin.unknown') }}">غير المعروفة</a>
+    <a href="{{ url_for('admin.stats') }}">الإحصائيات</a>
+    <a class="logout" href="{{ url_for('auth.logout') }}">خروج</a>
+  </nav>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>لوحة التحكم</h2>
+
+<div class="cards">
+  <div class="card">
+    <div class="card-num">{{ total_users or 0 }}</div>
+    <div>عدد المستخدمين</div>
+  </div>
+
+  <div class="card">
+    <div class="card-num" style="color:#4caf50;">👍 {{ pos or 0 }}</div>
+    <div>إعجابات</div>
+  </div>
+
+  <div class="card">
+    <div class="card-num" style="color:#ff5252;">👎 {{ neg or 0 }}</div>
+    <div>عدم إعجاب</div>
+  </div>
+
+  <div class="card">
+    <div class="card-num">{{ total_chats or 0 }}</div>
+    <div>إجمالي الرسائل</div>
+  </div>
+</div>
+
+
+<h3 style="margin-top:40px;">أكثر الأسئلة تكرارًا</h3>
+<ul class="top-questions-list">
+  {% for q, c in top_questions %}
+  <li>
+    <span>{{ loop.index }}. {{ q }}</span>
+    <small style="color:#a7c5ff;">{{ c }} مرات</small>
+  </li>
+  {% endfor %}
+</ul>
+
+
+<h3 style="margin-top:50px;">📌 المستخدمون وتقييماتهم</h3>
+
+<table class="admin-table">
+  <tr>
+    <th>البريد الإلكتروني</th>
+    <th>الدور</th>
+
+    <th>سؤال الأمان 1</th>
+    <th>إجابة 1 (مشفرة)</th>
+
+    <th>سؤال الأمان 2</th>
+    <th>إجابة 2 (مشفرة)</th>
+
+    <th>سؤال الأمان 3</th>
+    <th>إجابة 3 (مشفرة)</th>
+
+    <th>عدد المحادثات</th>
+    <th style="color:#4caf50;">👍 إيجابي</th>
+    <th style="color:#ff5252;">👎 سلبي</th>
+    <th>المجموع</th>
+  </tr>
+
+  {% for u in users %}
+  <tr>
+    <td>{{ u.email }}</td>
+    <td>{{ u.role }}</td>
+
+    <td>{{ u.security_q1 or "—" }}</td>
+    <td style="font-size:12px; opacity:.85;">{{ u.security_a1 or "—" }}</td>
+
+    <td>{{ u.security_q2 or "—" }}</td>
+    <td style="font-size:12px; opacity:.85;">{{ u.security_a2 or "—" }}</td>
+
+    <td>{{ u.security_q3 or "—" }}</td>
+    <td style="font-size:12px; opacity:.85;">{{ u.security_a3 or "—" }}</td>
+
+    <td>{{ u.total_conv }}</td>
+    <td style="color:#4caf50;">{{ u.pos }}</td>
+    <td style="color:#ff5252;">{{ u.neg }}</td>
+    <td><b>{{ u.total_rating }}</b></td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>محادثة المستخدم</h2>
+
+<p><strong>العنوان:</strong> {{ conv.title or "محادثة" }}</p>
+<p><strong>المستخدم:</strong> {{ conv.user.email if conv.user else "—" }}</p>
+<p><strong>تاريخ الإنشاء:</strong> {{ conv.created_at }}</p>
+
+<hr>
+
+<div class="chat-box" style="height:auto; max-height:70vh;">
+  {% if messages %}
+    {% for m in messages %}
+      <div class="message {{ 'user' if m.sender == 'user' else 'bot' }}">
+        {{ m.text }}
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="message bot">لا توجد رسائل داخل هذه المحادثة.</div>
+  {% endif %}
+</div>
+
+<br>
+<a href="{{ url_for('admin.user_details', uid=conv.user_id) }}">⬅ رجوع لمعلومات المستخدم</a>
+
+{% endblock %}

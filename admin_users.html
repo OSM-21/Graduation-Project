@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>إدارة المستخدمين</h2>
+
+<table class="admin-table">
+  <tr>
+    <th>البريد</th>
+    <th>الدور</th>
+    <th>آخر دخول</th>
+    <th>عدد المحادثات</th>
+    <th style="color:#4caf50;">👍</th>
+    <th style="color:#ff5252;">👎</th>
+    <th>المجموع</th>
+    <th>المزيد</th>
+    <th>حذف</th>
+  </tr>
+
+  {% for u in users %}
+  <tr>
+    <td>{{ u.email }}</td>
+    <td>{{ u.role }}</td>
+    <td>{{ u.last_login or "—" }}</td> 
+    <td>{{ u.conv_count }}</td>
+    
+    <td style="color:#4caf50;">{{ u.pos }}</td>
+    <td style="color:#ff5252;">{{ u.neg }}</td>
+    <td><b>{{ u.score }}</b></td>
+
+    <td>
+      <a href="{{ url_for('admin.user_details', uid=u.id) }}">عرض</a>
+    </td>
+
+    <td>
+      <form action="{{ url_for('admin.delete_user', uid=u.id) }}" method="POST">
+        <button onclick="return confirm('متأكد من الحذف؟')">حذف</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

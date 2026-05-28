@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>بوت 999</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <nav class="nav">
+
+    {% if guest %}
+      <a href="{{ url_for('auth.login') }}">تسجيل الدخول</a>
+      <a href="{{ url_for('auth.register') }}">إنشاء حساب</a>
+      <a class="logout" href="{{ url_for('auth.logout') }}">خروج</a>
+
+    {% else %}
+    
+      <a href="{{ url_for('views.index') }}" style="font-weight:bold; margin-left: 15px;">الصفحة الرئيسية</a>
+      
+      {% if current_user.is_authenticated and current_user.role.name == "Admin" %}
+        <a href="{{ url_for('admin.dashboard') }}">لوحة الأدمن</a>
+        <a href="{{ url_for('admin.users') }}">المستخدمون</a>
+        <a href="{{ url_for('admin.qa') }}">الأسئلة</a>
+        <a href="{{ url_for('admin.unknown') }}">غير المعروفة</a>
+        <a href="{{ url_for('admin.stats') }}">الإحصائيات</a>
+      {% endif %}
+
+      {% if current_user.is_authenticated %}
+        <a class="logout" href="{{ url_for('auth.logout') }}">خروج</a>
+      {% endif %}
+
+    {% endif %}
+
+  </nav>
+
+
+  <main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash">
+          {% for category, message in messages %}
+            <div class="flash-item {{category}}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+  
+</body>
+</html>

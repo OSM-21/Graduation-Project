@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>إدارة الأسئلة والأجوبة</h2>
+<form method="post" class="form-row">
+  <input name="question" placeholder="السؤال" required />
+  <input name="answer" placeholder="الجواب" required />
+  <input name="intent" placeholder="القصد (اختياري)" />
+  <button type="submit">إضافة</button>
+</form>
+<table class="table">
+  <tr><th>#</th><th>السؤال</th><th>الجواب</th><th>Intent</th><th></th></tr>
+  {% for it in items %}
+  <tr>
+    <td>{{ it.id }}</td>
+    <td>{{ it.question }}</td>
+    <td>{{ it.answer }}</td>
+    <td>{{ it.intent }}</td>
+    <td>
+      <form method="post" action="{{ url_for('admin.delete_qa', item_id=it.id) }}">
+        <button onclick="return confirm('حذف؟')" type="submit">🗑️</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

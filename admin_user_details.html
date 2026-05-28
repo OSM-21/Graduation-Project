@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 style="margin: 10px 0 18px;">معلومات المستخدم</h2>
+
+<style>
+  .ud-wrap{max-width:1100px;margin:0 auto}
+  .ud-card{
+    background:#fff;
+    border:1px solid rgba(0,0,0,.08);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 10px 25px rgba(0,0,0,.06);
+  }
+  .ud-table{width:100%;border-collapse:collapse}
+  .ud-table th,.ud-table td{padding:14px 16px;border-bottom:1px solid rgba(0,0,0,.08);vertical-align:top}
+  .ud-table th{width:220px;background:#f7f7f7;text-align:right;color:#123}
+  .ud-title{
+    margin:0;
+    padding:14px 16px;
+    background:#1f3f42;
+    color:#fff;
+    font-size:18px;
+    font-weight:700;
+  }
+  .ud-badge{
+    display:inline-block;
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:13px;
+    background:#e8f0ee;
+    color:#1f3f42;
+    border:1px solid rgba(31,63,66,.18);
+    font-weight:600;
+  }
+  .ud-muted{color:#666}
+  .ud-sec-grid{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:10px;
+  }
+  .ud-sec-item{
+    border:1px solid rgba(0,0,0,.08);
+    border-radius:12px;
+    padding:12px;
+    background:#fbfbfb;
+  }
+  .ud-sec-head{font-weight:700;margin-bottom:6px;color:#123}
+  .ud-sec-row{display:flex;gap:10px;flex-wrap:wrap}
+  .ud-sec-row .pill{
+    background:#f1f5f4;
+    border:1px dashed rgba(31,63,66,.28);
+    border-radius:10px;
+    padding:8px 10px;
+    font-size:14px;
+    color:#123;
+    flex:1;
+    min-width:260px;
+  }
+  .ud-sec-row .pill b{color:#1f3f42}
+  .ud-empty{
+    height:42px;
+    border-radius:10px;
+    background:#fff;
+    border:1px solid rgba(0,0,0,.10);
+  }
+  .ud-list{margin:0;padding:0;list-style:none}
+  .ud-list li{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    padding:10px 0;
+    border-bottom:1px solid rgba(0,0,0,.06);
+  }
+  .ud-list li:last-child{border-bottom:none}
+  .ud-list a{
+    color:#1f3f42;
+    text-decoration:none;
+    font-weight:700;
+  }
+  .ud-list a:hover{text-decoration:underline}
+  .ud-time{color:#666;font-size:13px;white-space:nowrap}
+  @media (max-width:700px){
+    .ud-table th{width:140px}
+    .ud-sec-row .pill{min-width:100%}
+  }
+</style>
+
+<div class="ud-wrap">
+  <div class="ud-card">
+
+    <div class="ud-title">ملف المستخدم</div>
+
+    <table class="ud-table">
+      <tr>
+        <th>البريد</th>
+        <td>{{ user.email }}</td>
+      </tr>
+
+      <tr>
+        <th>الدور</th>
+        <td>
+          <span class="ud-badge">{{ user.role.name if user.role else "—" }}</span>
+        </td>
+      </tr>
+
+      <tr>
+        <th>آخر دخول</th>
+        <td class="ud-muted">{{ user.last_login or "—" }}</td>
+      </tr>
+
+      <tr>
+        <th>أسئلة الأمان</th>
+        <td>
+          <div class="ud-sec-grid">
+
+            <div class="ud-sec-item">
+              <div class="ud-sec-head">سؤال 1</div>
+              <div class="ud-sec-row">
+                <div class="pill"><b>السؤال:</b> {{ user.security_q1 or "—" }}</div>
+                <div class="pill">
+                  <b>الإجابة:</b>
+                  <div class="ud-empty"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ud-sec-item">
+              <div class="ud-sec-head">سؤال 2</div>
+              <div class="ud-sec-row">
+                <div class="pill"><b>السؤال:</b> {{ user.security_q2 or "—" }}</div>
+                <div class="pill">
+                  <b>الإجابة:</b>
+                  <div class="ud-empty"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ud-sec-item">
+              <div class="ud-sec-head">سؤال 3</div>
+              <div class="ud-sec-row">
+                <div class="pill"><b>السؤال:</b> {{ user.security_q3 or "—" }}</div>
+                <div class="pill">
+                  <b>الإجابة:</b>
+                  <div class="ud-empty"></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <th>محادثاته</th>
+        <td>
+          {% if conversations %}
+            <ul class="ud-list">
+              {% for c in conversations %}
+                <li>
+                  <a href="{{ url_for('admin.conversation_details', cid=c.id) }}">
+                    {{ c.title or "محادثة" }}
+                  </a>
+                  <span class="ud-time">{{ c.created_at }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <span class="ud-muted">لا توجد محادثات.</span>
+          {% endif %}
+        </td>
+      </tr>
+
+    </table>
+
+  </div>
+</div>
+
+{% endblock %}

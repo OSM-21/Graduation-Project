@@ -1,0 +1,23 @@
+{
+  "intents": [
+    "banner",
+    "registration",
+    "schedule",
+    "blackboard",
+    "systems_difference",
+    "scholarship",
+    "scholarship_rules",
+    "transportation",
+    "contact",
+    "calendar",
+    "withdraw",
+    "registration_rules",
+    "housing",
+    "student_id",
+    "banner_help",
+    "clarification",
+    "greeting",
+    "unknown",
+    "admission"
+  ]
+}

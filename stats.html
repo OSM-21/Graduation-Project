@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  .st-wrap{max-width:1100px;margin:0 auto;padding:10px 0}
+  .st-title{margin:10px 0 18px;font-size:28px;font-weight:800;color:#123}
+
+  .st-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+  .st-card{
+    background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:14px;
+    padding:16px;box-shadow:0 10px 25px rgba(0,0,0,.06);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+  }
+  .st-card .label{color:#456;font-weight:700}
+  .st-card .num{font-size:28px;font-weight:900;color:#1f3f42}
+  .st-card .sub{color:#666;font-size:13px;margin-top:2px}
+
+  .st-badges{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+  .badge{
+    padding:6px 10px;border-radius:999px;font-size:13px;font-weight:700;
+    border:1px solid rgba(0,0,0,.10);background:#f7f7f7;color:#123;
+  }
+  .badge.pos{background:#e9f7ee;border-color:rgba(46,125,50,.25);color:#2e7d32}
+  .badge.neg{background:#ffefef;border-color:rgba(211,47,47,.22);color:#d32f2f}
+
+  .st-box{
+    background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:14px;
+    overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.06);
+  }
+  .st-box .head{
+    background:#1f3f42;color:#fff;padding:12px 16px;font-weight:800;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .st-box .head small{opacity:.9;font-weight:600}
+
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:12px 14px;border-bottom:1px solid rgba(0,0,0,.08);text-align:right}
+  th{background:#f7f7f7;color:#123;font-weight:800}
+  tr:hover td{background:#fafafa}
+  .cnt{font-weight:900;color:#1f3f42;white-space:nowrap}
+  .q{color:#123}
+
+  @media (max-width:900px){.st-cards{grid-template-columns:1fr}}
+</style>
+
+<div class="st-wrap">
+  <div class="st-title">الإحصائيات</div>
+
+  <div class="st-cards">
+    <div class="st-card">
+      <div>
+        <div class="label">عدد المستخدمين</div>
+        <div class="sub">إجمالي المسجلين</div>
+      </div>
+      <div class="num">{{ users or 0 }}</div>
+    </div>
+
+    <div class="st-card">
+      <div>
+        <div class="label">التقييمات</div>
+        <div class="st-badges">
+          <span class="badge pos">👍 إعجاب: {{ pos or 0 }}</span>
+          <span class="badge neg">👎 عدم إعجاب: {{ neg or 0 }}</span>
+        </div>
+      </div>
+      <div class="num">{{ (pos or 0) + (neg or 0) }}</div>
+    </div>
+
+    <div class="st-card">
+      <div>
+        <div class="label">الأسئلة الأعلى تكرارًا</div>
+        <div class="sub">أكثر 20 سؤال</div>
+      </div>
+      <div class="num">{{ top|length }}</div>
+    </div>
+  </div>
+
+  <div class="st-box">
+    <div class="head">
+      <span>الأسئلة الأعلى تكرارًا</span>
+      <small>مرتبة من الأعلى للأقل</small>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:70px;">#</th>
+          <th>السؤال</th>
+          <th style="width:130px;">عدد المرات</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if top %}
+          {% for q, c in top %}
+          <tr>
+            <td class="cnt">{{ loop.index }}</td>
+            <td class="q">{{ q }}</td>
+            <td class="cnt">{{ c }} مرات</td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="3" style="color:#666;padding:16px;">لا يوجد بيانات بعد.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="chat-layout" id="chatLayout">
+
+  {% if not guest %}
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="user-label">👤 {{ user.email }}</div>
+      
+      <button id="toggleSidebarBtn" class="toggle-sidebar-btn" title="فتح/إغلاق القائمة">
+        ☰
+      </button>
+      
+      <button id="newChatBtn" class="new-chat-btn">+ محادثة جديدة</button>
+    </div>
+
+    <ul id="conversationsList" class="conversations-list">
+      {% if conversations %}
+        {% for conv in conversations %}
+          <li
+            class="conv-item {% if active_conv and conv.id == active_conv.id %}active{% endif %}"
+            data-id="{{ conv.id }}"
+          >
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+              
+              <!-- عنوان المحادثة -->
+              <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                {{ conv.title or "محادثة جديدة" }}
+              </span>
+
+              <!-- أدوات يمين: حذف + تقييم -->
+              <div style="display:flex; align-items:center; gap:8px;">
+
+                <!-- زر حذف المحادثة -->
+                <button
+                  class="delete-conv-btn"
+                  data-id="{{ conv.id }}"
+                  title="حذف المحادثة"
+                  style="
+                    background:transparent;
+                    border:none;
+                    cursor:pointer;
+                    color:#ff6b6b;
+                    font-size:16px;
+                    line-height:1;
+                  "
+                >🗑️</button>
+
+                {% if not guest %}
+                  {% if conv.rating is none %}
+                    <span class="rate-controls" data-conv="{{ conv.id }}" style="display:flex; gap:6px;">
+                      <button class="rate-btn" data-value="1" title="أعجبني 👍">👍</button>
+                      <button class="rate-btn" data-value="-1" title="لم يعجبني 👎">👎</button>
+                    </span>
+                  {% else %}
+                    <span class="rated-label" style="color:#4caf50; font-size:13px;">تم التقييم ✔</span>
+                  {% endif %}
+                {% endif %}
+
+              </div>
+
+            </div>
+          </li>
+        {% endfor %}
+      {% else %}
+        <li style="padding:10px; color:#999; font-style:italic;">
+          لا توجد محادثات سابقة.
+        </li>
+      {% endif %}
+    </ul>
+  </aside>
+  {% endif %}
+
+
+  <div class="chat-main" id="chat-main">
+    
+    {% if not guest %}
+    <h1 class="chat-title" id="chat-title">
+        {{ active_conv.title or "محادثة جديدة" if active_conv else "محادثة جديدة" }}
+        
+        {% if active_conv and active_conv.rating is none and not guest %}
+        <span id="rateBtns" style="margin-right:auto; display:flex; gap:8px;">
+            <button class="rate-btn" data-value="1" title="أعجبني 👍">👍</button>
+            <button class="rate-btn" data-value="-1" title="لم يعجبني 👎">👎</button>
+        </span>
+        {% endif %}
+    </h1>
+    {% endif %}
+
+
+    <div id="chat-box" class="chat-box">
+      {% if guest %}
+        <div class="message bot" id="welcomeMessage">
+          👋 أهلاً أيها الزائر! اكتب أي سؤال وسأجيبك فورًا…
+        </div>
+      {% else %}
+        {% if active_conv and active_conv.messages %}
+          {% for msg in active_conv.messages|sort(attribute='created_at') %}
+            <div class="message {{ 'user' if msg.sender == 'user' else 'bot' }}">
+              {{ msg.text }}
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="message bot" id="welcomeMessage">
+            👋 أهلاً {{ user.email.split('@')[0] }}! سعيد بوجودك… اسألني أي شيء ❤️
+          </div>
+        {% endif %}
+      {% endif %}
+    </div>
+
+
+    <div class="input-row">
+      <input id="userInput" type="text" placeholder="اكتب سؤالك هنا..." />
+      <button id="sendBtn">إرسال</button>
+    </div>
+
+
+    <input type="hidden" id="conversationId" value="{{ active_conv.id if active_conv else '' }}">
+
+  </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+
+<!-- ✅ سكربت حذف المحادثة -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  // زر الحذف
+  document.querySelectorAll(".delete-conv-btn").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      e.stopPropagation(); // مهم عشان ما يفتح المحادثة
+      const cid = btn.getAttribute("data-id");
+      if (!cid) return;
+
+      if (!confirm("تبغى تحذف هذه المحادثة؟")) return;
+
+      try {
+        const res = await fetch(`/conversation/${cid}/delete`, { method: "POST" });
+        const data = await res.json();
+
+        if (!data.ok) {
+          alert("فشل حذف المحادثة.");
+          return;
+        }
+
+        // لو المحادثة الحالية هي نفسها المحذوفة
+        const currentId = document.getElementById("conversationId")?.value || "";
+        if (currentId && currentId === cid) {
+          // رجّع المستخدم لأحدث محادثة: نختار أول محادثة باقيه (غير المحذوفة)
+          const remaining = document.querySelectorAll(".conv-item");
+          let nextId = "";
+          remaining.forEach(li => {
+            const id = li.getAttribute("data-id");
+            if (id && id !== cid && nextId === "") nextId = id;
+          });
+
+          if (nextId) {
+            // افتح المحادثة المتبقية
+            window.location.href = `/?conversation_id=${nextId}`;
+          } else {
+            // ما فيه محادثات: اعادة تحميل الصفحة
+            window.location.reload();
+          }
+        } else {
+          // حذف من القائمة فورًا
+          const li = btn.closest(".conv-item");
+          if (li) li.remove();
+        }
+
+      } catch (err) {
+        alert("حصل خطأ أثناء الحذف.");
+      }
+    });
+  });
+
+});
+</script>
+
+{% endblock %}

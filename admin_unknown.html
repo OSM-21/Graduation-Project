@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>الأسئلة غير المعروفة</h2>
+
+<table class="admin-table">
+  <tr>
+    <th>السؤال</th>
+    <th>إضافة جواب</th>
+  </tr>
+
+  {% for item in items %}
+  <tr>
+    <td style="width:50%;">{{ item.text }}</td>
+
+    <td>
+      <form method="POST" style="display:flex; flex-direction:column; gap:10px;">
+        <input type="hidden" name="uid" value="{{ item.id }}">
+        <input type="hidden" name="text" value="{{ item.text }}">
+
+        <input name="answer" placeholder="الجواب" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #2a3958; background:#172038; color:#e6edf3;">
+        <input name="intent" placeholder="الـ Intent (اختياري)" style="width:100%; padding:8px; border-radius:6px; border:1px solid #2a3958; background:#172038; color:#e6edf3;">
+
+        <button type="submit" style="background:#2c62ff; color:white; border:none; border-radius:6px; padding:8px 12px; cursor:pointer; margin-top:5px;">
+          إضافة للمعرفة
+        </button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
